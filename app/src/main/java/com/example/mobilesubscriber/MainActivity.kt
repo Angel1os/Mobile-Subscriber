@@ -40,9 +40,6 @@ class MainActivity : ComponentActivity() {
                         composable(route = Screen.SubscribersScreen.route){
                             SubscribersScreen(navController = navController)
                         }
-//                            composable(route = Screen.SubscribersScreen.route) {
-//                                SubscribersScreen(navController = navController)
-//                            }
                             composable(
                                 route = "${Screen.SubscriberFormScreen.route}?subscriberId={subscriberId}",
                                 arguments = listOf(

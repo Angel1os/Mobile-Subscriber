@@ -20,44 +20,32 @@ class AddSubscriberViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ): ViewModel(){
     private val _subscriberName = mutableStateOf(
-        SubscriberTextFieldState(
-            hint = "Enter your full name"
-        )
+        SubscriberTextFieldState()
     )
     val subscriberName: State<SubscriberTextFieldState> = _subscriberName
 
     private val _subscriberEmail = mutableStateOf(
-        SubscriberTextFieldState(
-            hint = "Enter your mail"
-        )
+        SubscriberTextFieldState()
     )
     val subscriberEmail: State<SubscriberTextFieldState> = _subscriberEmail
 
     private val _subscriberContact = mutableStateOf(
-        SubscriberTextFieldState(
-            hint = "Enter your contact"
-        )
+        SubscriberTextFieldState()
     )
     val subscriberContact: State<SubscriberTextFieldState> = _subscriberContact
 
     private val _subscriberDob = mutableStateOf(
-        SubscriberTextFieldState(
-            hint = "Enter your date of birth"
-        )
+        SubscriberTextFieldState()
     )
     val subscriberDob: State<SubscriberTextFieldState> = _subscriberDob
 
     private val _subscriberLocation = mutableStateOf(
-        SubscriberTextFieldState(
-            hint = "Enter your location"
-        )
+        SubscriberTextFieldState()
     )
     val subscriberLocation: State<SubscriberTextFieldState> = _subscriberLocation
 
     private val _subscriberStatus = mutableStateOf(
-        SubscriberTextFieldState(
-            hint = "Select your status"
-        )
+        SubscriberTextFieldState()
     )
     val subscriberStatus: State<SubscriberTextFieldState> = _subscriberStatus
 

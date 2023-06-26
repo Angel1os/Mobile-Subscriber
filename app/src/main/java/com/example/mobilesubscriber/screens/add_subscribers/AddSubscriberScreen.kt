@@ -1,15 +1,20 @@
 package com.example.mobilesubscriber.screens.add_subscribers
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
+import android.icu.util.Calendar
+import android.widget.DatePicker
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -19,6 +24,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Save
@@ -40,8 +46,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -128,7 +136,7 @@ fun AddSubscriberScreen(
                     viewModel.onEvent(AddSubscriberEvent.EnteredSubscriberName(it))
                 },
                 labelName = "Subscriber Name",
-//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
             )
             myTextField(
                 value = subscriberEmailState.text,
@@ -136,6 +144,7 @@ fun AddSubscriberScreen(
                     viewModel.onEvent(AddSubscriberEvent.EnteredSubscriberEmail(it))
                 },
                 labelName = "Email",
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
             myTextField(
                 value = subscriberContactState.text,
@@ -143,21 +152,29 @@ fun AddSubscriberScreen(
                     viewModel.onEvent(AddSubscriberEvent.EnteredSubscriberContact(it))
                 },
                 labelName = "Phone Number",
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+
             )
-            myTextField(
-                value = subscriberDobState.text,
-                onValueChange = {
-                    viewModel.onEvent(AddSubscriberEvent.EnteredSubscriberDob(it))
-                },
-                labelName = "Date of Birth",
-            )
+//            myTextField(
+//                value = subscriberDobState.text,
+//                onValueChange = {
+//                    viewModel.onEvent(AddSubscriberEvent.EnteredSubscriberDob(it))
+//                },
+//                labelName = "Date of Birth",
+//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+//
+//            )
             myTextField(
                 value = subscriberLocationState.text,
                 onValueChange = {
                     viewModel.onEvent(AddSubscriberEvent.EnteredSubscriberLocation(it))
                 },
                 labelName = "Location",
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+
             )
+            Spacer(modifier = Modifier.height(10.dp))
+            myDatePickerField(subscriberDobState,viewModel)
             Spacer(modifier = Modifier.height(10.dp))
             myDropDownField(subscriberStatusState,viewModel)
         }
@@ -166,15 +183,13 @@ fun AddSubscriberScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-//fun myTextField(text: String, value: String, onValueChange: (String) -> Unit, labelName: String){
-fun myTextField(value: String, onValueChange: (String) -> Unit, labelName: String){
+fun myTextField(value: String, onValueChange: (String) -> Unit, labelName: String, keyboardOptions: KeyboardOptions){
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(text = labelName)},
-//        key
+        keyboardOptions = keyboardOptions
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -193,7 +208,8 @@ fun myDropDownField(subscriberStatusState : SubscriberTextFieldState, viewModel:
 
     Column{
         OutlinedTextField(
-            value = if (selectedOption.isEmpty()) "Status" else selectedOption,
+            value = if (subscriberStatusState.text.isEmpty() && selectedOption.isEmpty()) "Select a package"
+            else if (!selectedOption.isEmpty()) selectedOption else subscriberStatusState.text,
             onValueChange = {selectedOption = it},
             readOnly = true,
             shape = RoundedCornerShape(4.dp),
@@ -234,4 +250,117 @@ fun myDropDownField(subscriberStatusState : SubscriberTextFieldState, viewModel:
         }
     }
 }
+
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun myDatePickerField(
+//    subscriberDobState : SubscriberTextFieldState,
+//    viewModel: AddSubscriberViewModel
+//){
+//    var isDatePickerVisible by remember { mutableStateOf(false) }
+//    var textFieldSize by remember { mutableStateOf(Size.Zero) }
+//
+//    val context = LocalContext.current
+//    val calendar = Calendar.getInstance()
+//
+//    var selectedDateText by remember { mutableStateOf("") }
+//
+//    val year = calendar[Calendar.YEAR]
+//    val month = calendar[Calendar.MONTH]
+//    val day = calendar[Calendar.DAY_OF_MONTH]
+//
+//    val datePicker = DatePickerDialog(
+//        context,
+//        {
+//            _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+////            selectedDateText = "$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear"
+//            subscriberDobState.text = "$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear"
+//        }, year, month, day,
+//
+//    )
+//
+//    Column {
+//        OutlinedTextField(
+//            value = subscriberDobState.text,
+//            onValueChange = {
+//                selectedDateText = it
+//                viewModel.onEvent(AddSubscriberEvent.EnteredSubscriberDob(it))
+//            },
+//            modifier = Modifier
+//                .size(280.dp, 50.dp)
+//                .onGloballyPositioned { layoutCoordinates ->
+//                    textFieldSize = layoutCoordinates.size.toSize()
+//                },
+//
+////            value = if (selectedDateText.isEmpty()) "Date of Birth" else selectedDateText,
+////            onValueChange = {
+////                selectedDateText = it
+////                viewModel.onEvent(AddSubscriberEvent.EnteredSubscriberDob(it))
+////            },
+//
+//
+//
+//            shape = RoundedCornerShape(4.dp),
+//            readOnly = true,
+//            trailingIcon = {
+//                IconButton(onClick = {datePicker.show()}) {
+//                    Icon(Icons.Filled.DateRange, contentDescription = "Show Date")
+//                }
+//            },
+//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+//        )
+//    }
+//}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun myDatePickerField(
+    subscriberDobState: SubscriberTextFieldState,
+    viewModel: AddSubscriberViewModel
+) {
+    var isDatePickerVisible by remember { mutableStateOf(false) }
+    var textFieldSize by remember { mutableStateOf(Size.Zero) }
+    var selectedDate by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+
+    val year = calendar[Calendar.YEAR]
+    val month = calendar[Calendar.MONTH]
+    val day = calendar[Calendar.DAY_OF_MONTH]
+
+    val datePicker = DatePickerDialog(
+        context,
+        { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
+            selectedDate = "$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear"
+            subscriberDobState.text = selectedDate
+            viewModel.onEvent(AddSubscriberEvent.EnteredSubscriberDob(selectedDate))
+        },
+        year, month, day
+    )
+
+    Column {
+        OutlinedTextField(
+            value =  if (subscriberDobState.text.isEmpty() && selectedDate.isEmpty()) "Pick Date"
+            else if (!selectedDate.isEmpty()) selectedDate else subscriberDobState.text,
+            onValueChange = {
+                selectedDate = it
+            },
+            modifier = Modifier
+                .size(280.dp, 50.dp)
+                .onGloballyPositioned { layoutCoordinates ->
+                    textFieldSize = layoutCoordinates.size.toSize()
+                },
+            shape = RoundedCornerShape(4.dp),
+            readOnly = true,
+            trailingIcon = {
+                IconButton(onClick = { datePicker.show() }) {
+                    Icon(Icons.Filled.DateRange, contentDescription = "Show Date")
+                }
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        )
+    }
+}
+
 
