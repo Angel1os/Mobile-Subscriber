@@ -39,6 +39,7 @@ fun SubscribersScreen(
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -80,7 +81,8 @@ fun SubscribersScreen(
                             navController.navigate(Screen.SubscriberFormScreen.route +
                                     "?subscriberId=${item.id}"
                             )
-                        }
+                        },
+//                    userData = UserData()
                 )
             }
         }

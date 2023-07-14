@@ -4,17 +4,21 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.icu.util.Calendar
 import android.widget.DatePicker
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ButtonColors
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -29,6 +33,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -74,14 +79,15 @@ fun AddSubscriberScreen(
 
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = true){
+    LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
-            when(event){
+            when (event) {
                 is AddSubscriberViewModel.UiEvent.ShowSnackbar -> {
                     scaffoldState.snackbarHostState.showSnackbar(
                         message = event.message
                     )
                 }
+
                 is AddSubscriberViewModel.UiEvent.SaveSubscriber -> {
                     navController.navigateUp()
                 }
@@ -89,6 +95,7 @@ fun AddSubscriberScreen(
         }
     }
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = {
@@ -104,31 +111,21 @@ fun AddSubscriberScreen(
                     ) {
                         Icon(
                             Icons.Filled.ArrowBack,
-                            "backIcon")
+                            "backIcon"
+                        )
                     }
                 },
             )
         },
-        floatingActionButton = {
-        FloatingActionButton(
-            onClick = {viewModel.onEvent(AddSubscriberEvent.SaveSubscriber)
-            },
-            backgroundColor = MaterialTheme.colors.primary
-        ) {
-            Icon(
-                imageVector = Icons.Default.Save,
-                contentDescription = "Save note"
-            )
 
-        }
-    },
         scaffoldState = scaffoldState
     ) {
+
         Column(
             modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             myTextField(
                 value = subscriberNameState.text,
@@ -155,15 +152,7 @@ fun AddSubscriberScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
 
             )
-//            myTextField(
-//                value = subscriberDobState.text,
-//                onValueChange = {
-//                    viewModel.onEvent(AddSubscriberEvent.EnteredSubscriberDob(it))
-//                },
-//                labelName = "Date of Birth",
-//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
-//
-//            )
+
             myTextField(
                 value = subscriberLocationState.text,
                 onValueChange = {
@@ -174,27 +163,58 @@ fun AddSubscriberScreen(
 
             )
             Spacer(modifier = Modifier.height(10.dp))
-            myDatePickerField(subscriberDobState,viewModel)
+            myDatePickerField(subscriberDobState, viewModel)
             Spacer(modifier = Modifier.height(10.dp))
-            myDropDownField(subscriberStatusState,viewModel)
+            myDropDownField(subscriberStatusState, viewModel)
+            Spacer(modifier = Modifier.height(10.dp))
+            Button(
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .fillMaxWidth(),
+//                    .background(Color.Blue),
+//                colors = ButtonColors(
+//                    backgroundColor = Color.Blue,
+//                    contentColor = Color.White
+//                ),
+                onClick = {
+                    viewModel.onEvent(AddSubscriberEvent.SaveSubscriber)
+                }
+            ) {
+                Text(text = "Save")
+
+            }
         }
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun myTextField(value: String, onValueChange: (String) -> Unit, labelName: String, keyboardOptions: KeyboardOptions){
+fun myTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    labelName: String,
+    keyboardOptions: KeyboardOptions
+) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(text = labelName)},
-        keyboardOptions = keyboardOptions
+        label = { Text(text = labelName) },
+        keyboardOptions = keyboardOptions,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun myDropDownField(subscriberStatusState : SubscriberTextFieldState, viewModel: AddSubscriberViewModel){
+fun myDropDownField(
+    subscriberStatusState: SubscriberTextFieldState,
+    viewModel: AddSubscriberViewModel
+) {
     val statusOptions = listOf("Prepaid", "Postpaid")
     var expanded by remember { mutableStateOf(value = false) }
     var selectedOption by remember { mutableStateOf("") }
@@ -206,21 +226,22 @@ fun myDropDownField(subscriberStatusState : SubscriberTextFieldState, viewModel:
         Icons.Filled.KeyboardArrowDown
     }
 
-    Column{
+    Column {
         OutlinedTextField(
             value = if (subscriberStatusState.text.isEmpty() && selectedOption.isEmpty()) "Select a package"
             else if (!selectedOption.isEmpty()) selectedOption else subscriberStatusState.text,
-            onValueChange = {selectedOption = it},
+            onValueChange = { selectedOption = it },
             readOnly = true,
             shape = RoundedCornerShape(4.dp),
             trailingIcon = {
                 Icon(
                     icon,
                     contentDescription = "",
-                Modifier.clickable{expanded = !expanded})
+                    Modifier.clickable { expanded = !expanded })
             },
             modifier = Modifier
-                .size(280.dp, 50.dp)
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
                 .onGloballyPositioned { layoutCoordinates ->
                     textFieldSize = layoutCoordinates.size.toSize()
                 }
@@ -231,18 +252,18 @@ fun myDropDownField(subscriberStatusState : SubscriberTextFieldState, viewModel:
                 expanded = false
             },
             modifier = Modifier
-                .width(with(LocalDensity.current){textFieldSize.width.toDp()})
+                .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
         ) {
-            statusOptions.forEach {
-                    statusOption -> DropdownMenuItem(
-                text = {
-                    Text(text = statusOption, color = Color.Black)
-                },
-                onClick = {
-                    expanded = false
-                    selectedOption = statusOption
-                },
-                colors = MenuDefaults.itemColors()
+            statusOptions.forEach { statusOption ->
+                DropdownMenuItem(
+                    text = {
+                        Text(text = statusOption, color = Color.Black)
+                    },
+                    onClick = {
+                        expanded = false
+                        selectedOption = statusOption
+                    },
+                    colors = MenuDefaults.itemColors()
                 )
                 subscriberStatusState.text = selectedOption
                 viewModel.onEvent(AddSubscriberEvent.EnteredSubscriberStatus(selectedOption))
@@ -251,66 +272,6 @@ fun myDropDownField(subscriberStatusState : SubscriberTextFieldState, viewModel:
     }
 }
 
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun myDatePickerField(
-//    subscriberDobState : SubscriberTextFieldState,
-//    viewModel: AddSubscriberViewModel
-//){
-//    var isDatePickerVisible by remember { mutableStateOf(false) }
-//    var textFieldSize by remember { mutableStateOf(Size.Zero) }
-//
-//    val context = LocalContext.current
-//    val calendar = Calendar.getInstance()
-//
-//    var selectedDateText by remember { mutableStateOf("") }
-//
-//    val year = calendar[Calendar.YEAR]
-//    val month = calendar[Calendar.MONTH]
-//    val day = calendar[Calendar.DAY_OF_MONTH]
-//
-//    val datePicker = DatePickerDialog(
-//        context,
-//        {
-//            _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDayOfMonth: Int ->
-////            selectedDateText = "$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear"
-//            subscriberDobState.text = "$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear"
-//        }, year, month, day,
-//
-//    )
-//
-//    Column {
-//        OutlinedTextField(
-//            value = subscriberDobState.text,
-//            onValueChange = {
-//                selectedDateText = it
-//                viewModel.onEvent(AddSubscriberEvent.EnteredSubscriberDob(it))
-//            },
-//            modifier = Modifier
-//                .size(280.dp, 50.dp)
-//                .onGloballyPositioned { layoutCoordinates ->
-//                    textFieldSize = layoutCoordinates.size.toSize()
-//                },
-//
-////            value = if (selectedDateText.isEmpty()) "Date of Birth" else selectedDateText,
-////            onValueChange = {
-////                selectedDateText = it
-////                viewModel.onEvent(AddSubscriberEvent.EnteredSubscriberDob(it))
-////            },
-//
-//
-//
-//            shape = RoundedCornerShape(4.dp),
-//            readOnly = true,
-//            trailingIcon = {
-//                IconButton(onClick = {datePicker.show()}) {
-//                    Icon(Icons.Filled.DateRange, contentDescription = "Show Date")
-//                }
-//            },
-//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-//        )
-//    }
-//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -341,13 +302,14 @@ fun myDatePickerField(
 
     Column {
         OutlinedTextField(
-            value =  if (subscriberDobState.text.isEmpty() && selectedDate.isEmpty()) "Pick Date"
+            value = if (subscriberDobState.text.isEmpty() && selectedDate.isEmpty()) "Pick Date"
             else if (!selectedDate.isEmpty()) selectedDate else subscriberDobState.text,
             onValueChange = {
                 selectedDate = it
             },
             modifier = Modifier
-                .size(280.dp, 50.dp)
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
                 .onGloballyPositioned { layoutCoordinates ->
                     textFieldSize = layoutCoordinates.size.toSize()
                 },

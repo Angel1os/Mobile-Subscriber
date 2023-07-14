@@ -70,7 +70,7 @@ class AddSubscriberViewModel @Inject constructor(
                             text = subscriber.contact,
                         )
                         _subscriberDob.value = subscriberDob.value.copy(
-                            text = subscriber.doB,
+                            text = subscriber.doB
                         )
                         _subscriberLocation.value = subscriberLocation.value.copy(
                             text = subscriber.location,
@@ -80,6 +80,7 @@ class AddSubscriberViewModel @Inject constructor(
                         )
                     }
                 }
+
             }
         }
     }

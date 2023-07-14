@@ -4,12 +4,15 @@ import android.app.Application
 import androidx.room.Room
 import com.example.mobilesubscriber.data.SubscriberDatabase
 import com.example.mobilesubscriber.data.model.Subscriber
+import com.example.mobilesubscriber.data.repository.AuthRepository
+import com.example.mobilesubscriber.data.repository.AuthRepositoryImpl
 import com.example.mobilesubscriber.data.repository.SubscriberRepository
 import com.example.mobilesubscriber.data.repository.SubscriberRepositoryImpl
 import com.example.mobilesubscriber.data.use_case.AddSubscriber
 import com.example.mobilesubscriber.data.use_case.GetSubscriber
 import com.example.mobilesubscriber.data.use_case.GetSubscribers
 import com.example.mobilesubscriber.data.use_case.SubscriberUseCases
+import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,6 +46,16 @@ object AppModule {
             addSubscriber = AddSubscriber(repository),
             getSubscriber = GetSubscriber(repository)
         )
+    }
+
+    @Provides
+    @Singleton
+    fun providesFirebaseAuth()  = FirebaseAuth.getInstance()
+
+    @Provides
+    @Singleton
+    fun providesRepositoryImpl(firebaseAuth: FirebaseAuth): AuthRepository {
+        return AuthRepositoryImpl(firebaseAuth)
     }
 
 }
