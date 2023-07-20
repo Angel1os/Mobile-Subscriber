@@ -13,19 +13,39 @@ fun RetrofitScreen(
     viewModel: APIViewModel
 ) {
     val posts by viewModel.posts.observeAsState(emptyList())
+    val subscribers by viewModel.subscribers.observeAsState(emptyList())
 
     LaunchedEffect(Unit) {
-        viewModel.fetchPosts()
+//        viewModel.fetchPosts()
+        viewModel.fetchSubscribers()
     }
 
-    Column {
-        if (posts.isEmpty()) {
-            Text(text = "Nothing dey ooo")
-        } else {
-            posts.forEach { post ->
-                Log.d("MY POST____________________", post.title)
-                Text(text = "${post.title}")
+//    Column {
+//        if (posts.isEmpty()){
+//            Text(text = "Nothing dey ooo")
+//        } else {
+//            posts.forEach{ card->
+//                Log.d("MY POST____________________",card.title)
+//                Text(text = "${card.title}")
+//            }
+//
+//        }
+
+        Column {
+            if (subscribers.isEmpty()) {
+                Text(text = "Nothing dey ooo")
+            } else {
+                subscribers.forEach { subscriber ->
+                    Log.d("SUBSCRIBER____________________", subscriber.name)
+                    Text(text = "${subscriber.name}")
+                    Text(text = subscriber.email)
+                    Text(text = subscriber.location)
+                    Text(text = subscriber.contact)
+                    Text(text = subscriber.doB)
+                    Text(text = subscriber.status)
+                    Text(text = subscriber.createdAt)
+                }
             }
         }
-    }
+//    }
 }

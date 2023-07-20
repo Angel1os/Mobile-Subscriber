@@ -1,4 +1,4 @@
-package com.example.mobilesubscriber.screens.util
+package com.example.mobilesubscriber.util
 
 sealed class Screen(val route:String) {
     object SignInScreen: Screen("sign_in")

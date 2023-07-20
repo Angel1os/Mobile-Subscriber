@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.mobilesubscriber.data.model.Subscriber
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 @Dao
 interface SubscriberDao{
@@ -16,5 +17,7 @@ interface SubscriberDao{
     suspend fun insertSubscriber(subscriber: Subscriber)
 
     @Query("SELECT * FROM subscriber WHERE id =:id")
-    suspend fun getSubscriberById(id: Int): Subscriber?
+    suspend fun getSubscriberById(id: UUID): Subscriber?
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertSubscribers(subscribers: List<Subscriber>)
 }

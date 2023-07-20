@@ -3,7 +3,6 @@ package com.example.mobilesubscriber.data.di
 import android.app.Application
 import androidx.room.Room
 import com.example.mobilesubscriber.data.SubscriberDatabase
-import com.example.mobilesubscriber.data.model.Subscriber
 import com.example.mobilesubscriber.data.repository.AuthRepository
 import com.example.mobilesubscriber.data.repository.AuthRepositoryImpl
 import com.example.mobilesubscriber.data.repository.SubscriberRepository
@@ -12,6 +11,7 @@ import com.example.mobilesubscriber.data.use_case.AddSubscriber
 import com.example.mobilesubscriber.data.use_case.GetSubscriber
 import com.example.mobilesubscriber.data.use_case.GetSubscribers
 import com.example.mobilesubscriber.data.use_case.SubscriberUseCases
+import com.example.mobilesubscriber.services.SubscriberServiceRepository
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
@@ -40,13 +40,18 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providerSubscriberUseCases(repository: SubscriberRepository): SubscriberUseCases{
+    fun providerSubscriberUseCases(repository: SubscriberRepository,
+                                   serviceRepository:SubscriberServiceRepository
+    ): SubscriberUseCases{
         return SubscriberUseCases(
             getSubscribers = GetSubscribers(repository),
             addSubscriber = AddSubscriber(repository),
-            getSubscriber = GetSubscriber(repository)
+            getSubscriber = GetSubscriber(repository),
+
         )
     }
+
+
 
     @Provides
     @Singleton

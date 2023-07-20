@@ -12,6 +12,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import java.util.Random
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,14 +54,17 @@ class AddSubscriberViewModel @Inject constructor(
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    private var currentSubscriberId: Int? = null
+//    private var currentSubscriberId: Int? = null
+    public var currentSubscriberId: UUID? = null
 
     init {
-        savedStateHandle.get<Int>("subscriberId")?.let { subscriberId->
-            if (subscriberId != -1){
+        savedStateHandle.get<String>("subscriberId")?.let { subscriberId->
+            if (subscriberId != "-1"){
                 viewModelScope.launch {
-                    subscriberUseCases.getSubscriber(subscriberId)?.also { subscriber ->
-                        currentSubscriberId = subscriber.id
+                    val uuid = UUID.fromString(subscriberId)
+                    subscriberUseCases.getSubscriber(uuid)?.also { subscriber ->
+                        val uuid = UUID.fromString(subscriber.id)
+                        currentSubscriberId = uuid
                         _subscriberName.value = subscriberName.value.copy(
                             text = subscriber.name,
                         )
@@ -128,8 +133,8 @@ class AddSubscriberViewModel @Inject constructor(
                                 doB = subscriberDob.value.text,
                                 location = subscriberLocation.value.text,
                                 status = subscriberStatus.value.text,
-                                timestamp = System.currentTimeMillis(),
-                                id = currentSubscriberId
+                                createdAt = System.currentTimeMillis().toString(),
+                                id = currentSubscriberId.toString()
                             )
                         )
                         _eventFlow.emit(UiEvent.SaveSubscriber)

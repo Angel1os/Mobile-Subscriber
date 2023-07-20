@@ -69,7 +69,7 @@ fun SubscriberItem(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = subscriber.contact)
+                    Text(text = subscriber.contact.toString())
 //                    if (userData?.username != null){
 //                        Text(text = subscriber.contact)
 //                    }

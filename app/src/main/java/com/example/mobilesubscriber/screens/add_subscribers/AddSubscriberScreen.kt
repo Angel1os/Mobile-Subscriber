@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.icu.util.Calendar
 import android.widget.DatePicker
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -60,12 +58,17 @@ import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.mobilesubscriber.R
+import com.example.mobilesubscriber.data.model.Subscriber
+import com.example.mobilesubscriber.data.model.SubscriberModel
+import com.example.mobilesubscriber.services.APIViewModel
 import kotlinx.coroutines.flow.collectLatest
+import java.util.UUID
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun AddSubscriberScreen(
     navController: NavController,
+    apiViewModel: APIViewModel,
     viewModel: AddSubscriberViewModel = hiltViewModel()
 ) {
     val subscriberNameState = viewModel.subscriberName.value
@@ -78,6 +81,7 @@ fun AddSubscriberScreen(
     val scaffoldState = rememberScaffoldState()
 
     val scope = rememberCoroutineScope()
+    var subscriberId = viewModel.currentSubscriberId
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -179,12 +183,30 @@ fun AddSubscriberScreen(
 //                ),
                 onClick = {
                     viewModel.onEvent(AddSubscriberEvent.SaveSubscriber)
+                    if (subscriberId == null) {
+                        // The subscriberId variable is not null
+                        subscriberId = UUID.randomUUID()
+                    }
+                    val subscriber = SubscriberModel(
+                    name = subscriberNameState.text,
+                    email = subscriberEmailState.text,
+                    contact = subscriberContactState.text,
+                    doB = subscriberDobState.text,
+                    location = subscriberLocationState.text,
+                    status = subscriberStatusState.text,
+                    createdAt = System.currentTimeMillis().toString(),
+                    id = subscriberId!!
+                    )
+                    apiViewModel.insertSubscriber(subscriber)
                 }
             ) {
                 Text(text = "Save")
-
             }
         }
+    }
+
+    fun getSubscriberById(){
+
     }
 }
 

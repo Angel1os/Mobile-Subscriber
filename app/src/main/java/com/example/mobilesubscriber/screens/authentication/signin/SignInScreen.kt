@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.mobilesubscriber.R
 import com.example.mobilesubscriber.screens.authentication.AuthenticationViewModel
-import com.example.mobilesubscriber.screens.util.Screen
+import com.example.mobilesubscriber.util.Screen
 import kotlinx.coroutines.launch
 
 

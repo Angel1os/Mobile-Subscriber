@@ -18,6 +18,9 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -27,18 +30,22 @@ import androidx.navigation.NavController
 import com.example.mobilesubscriber.R
 import com.example.mobilesubscriber.data.model.Subscriber
 import com.example.mobilesubscriber.screens.subscribers.components.SubscriberItem
-import com.example.mobilesubscriber.screens.util.Screen
+import com.example.mobilesubscriber.services.APIViewModel
+import com.example.mobilesubscriber.util.Screen
+import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
 fun SubscribersScreen(
     navController: NavController,
-    viewModel: SubscribersViewModel = hiltViewModel()
-){
+    viewModel: SubscribersViewModel = hiltViewModel(),
+    apiViewModel: APIViewModel = hiltViewModel()
+) {
     val state = viewModel.state.value
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
+    val subscribers by apiViewModel.subscribers.observeAsState(emptyList())
 
     Scaffold(
         topBar = {
@@ -59,35 +66,40 @@ fun SubscribersScreen(
                     navController.navigate(Screen.SubscriberFormScreen.route)
                 },
                 backgroundColor = MaterialTheme.colors.primary
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add note"
-                    )
-                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add note"
+                )
+            }
         },
-
         scaffoldState = scaffoldState
     ) {
-
-        LazyColumn(modifier = Modifier.fillMaxSize()){
-            items(state.subscribers){item: Subscriber ->
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(state.subscribers) { item: Subscriber ->
                 SubscriberItem(
                     subscriber = item,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
                             //Navigate To Subscriber Form and fill with Details
-                            navController.navigate(Screen.SubscriberFormScreen.route +
-                                    "?subscriberId=${item.id}"
+                            navController.navigate(
+                                Screen.SubscriberFormScreen.route +
+                                        "?subscriberId=${item.id.toString()}"
                             )
                         },
-//                    userData = UserData()
                 )
             }
         }
     }
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            apiViewModel.fetchSubscribers()
+        }
+    }
 }
+
 
 @Composable
 fun subscribersAppBar(
@@ -108,6 +120,8 @@ fun subscribersAppBar(
     )
 
 }
+
+
 
 @Composable
 fun AppBarAction(onMenuClicked: () -> Unit) {

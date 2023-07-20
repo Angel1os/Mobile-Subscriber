@@ -23,7 +23,7 @@ import com.example.mobilesubscriber.screens.authentication.signin.SignInScreen
 import com.example.mobilesubscriber.screens.authentication.signup.SignUpScreen
 import com.example.mobilesubscriber.screens.subscribers.SubscribersScreen
 import com.example.mobilesubscriber.ui.theme.MobileSubscriberTheme
-import com.example.mobilesubscriber.screens.util.Screen
+import com.example.mobilesubscriber.util.Screen
 import com.example.mobilesubscriber.services.APIViewModel
 import com.example.mobilesubscriber.services.RetrofitScreen
 import com.google.android.gms.auth.api.identity.Identity
@@ -82,6 +82,7 @@ class MainActivity : ComponentActivity() {
                         composable(route = Screen.SubscribersScreen.route){
                             SubscribersScreen(
                                 navController = navController,
+                                apiViewModel = retrofitAPIViewModel
                             )
                         }
 
@@ -89,12 +90,14 @@ class MainActivity : ComponentActivity() {
                                 route = "${Screen.SubscriberFormScreen.route}?subscriberId={subscriberId}",
                                 arguments = listOf(
                                     navArgument(name = "subscriberId") {
-                                        type = NavType.IntType
-                                        defaultValue = -1
+                                        type = NavType.StringType
+                                        defaultValue = (-1).toString()
                                     }
                                 )
                             ) {
-                                AddSubscriberScreen(navController = navController)
+                                AddSubscriberScreen(
+                                    navController = navController,
+                                    apiViewModel = retrofitAPIViewModel)
                         }
                     }
                 }
